@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>붕괴: 스타레일 육성 가이드 & 재화 계산기 (Honkai: Star Rail Master Guide)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        hsr: {
+                            bg: '#0b0e17',
+                            card: '#161b26',
+                            border: '#2a3245',
+                            gold: '#f3d16e',
+                            cyan: '#00f0ff',
+                            purple: '#a855f7',
+                            red: '#f43f5e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #0b0e17;
+            color: #e2e8f0;
+        }
+        .glass-panel {
+            background: rgba(22, 27, 38, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-panel-hover {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-panel-hover:hover {
+            border-color: rgba(0, 240, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(0, 240, 255, 0.15);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(11, 14, 23, 0.5); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #2a3245; border-radius: 9999px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #00f0ff; }
+        
+        /* Glow effects */
+        .glow-cyan { text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
+        .glow-gold { text-shadow: 0 0 10px rgba(243, 209, 110, 0.5); }
+        .border-glow-cyan { box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); }
+    </style>
+</head>
+<body class="min-h-full flex flex-col custom-scrollbar antialiased">
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-40 bg-hsr-bg/90 backdrop-blur-md border-b border-hsr-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-amber-400 p-[1px] flex items-center justify-center shadow-lg shadow-cyan-500/10">
+                    <div class="w-full h-full bg-hsr-bg rounded-[11px] flex items-center justify-center">
+                        <i class="fa-solid fa-star-of-david text-hsr-cyan text-xl"></i>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg leading-none bg-gradient-to-r from-white via-slate-200 to-hsr-cyan bg-clip-text text-transparent">
+                        붕괴: 스타레일 <span class="text-hsr-gold font-bold">마스터 가이드</span>
+                    </h1>
+                    <span class="text-xs text-slate-400 font-medium">캐릭터 세팅 및 개척력 계산기</span>
+                </div>
+            </div>
+
+            <!-- Global Nav Buttons -->
+            <nav class="hidden md:flex items-center space-x-1 bg-hsr-card/80 p-1 rounded-xl border border-hsr-border">
+                <button onclick="switchTab('characters')" id="nav-characters" class="nav-tab px-4 py-1.5 rounded-lg text-sm font-semibold transition text-hsr-cyan bg-hsr-border">
+                    <i class="fa-solid fa-users mr-1.5"></i> 캐릭터 DB
+                </button>
+                <button onclick="switchTab('calculator')" id="nav-calculator" class="nav-tab px-4 py-1.5 rounded-lg text-sm font-semibold transition text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-calculator mr-1.5"></i> 재화 계산기
+                </button>
+                <button onclick="switchTab('relics')" id="nav-relics" class="nav-tab px-4 py-1.5 rounded-lg text-sm font-semibold transition text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-chart-simple mr-1.5"></i> 스탯 진단기
+                </button>
+                <button onclick="switchTab('priority')" id="nav-priority" class="nav-tab px-4 py-1.5 rounded-lg text-sm font-semibold transition text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-diagram-project mr-1.5"></i> 육성 로드맵
+                </button>
+            </nav>
+
+            <div class="flex items-center space-x-2">
+                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-hsr-gold/10 text-hsr-gold border border-hsr-gold/30">
+                    <i class="fa-solid fa-bolt mr-1"></i> 개척력 시뮬레이터
+                </span>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Row -->
+        <div class="flex md:hidden border-t border-hsr-border overflow-x-auto custom-scrollbar p-2 space-x-2 bg-hsr-bg">
+            <button onclick="switchTab('characters')" id="mobile-nav-characters" class="mobile-nav-tab flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold whitespace-nowrap text-hsr-cyan bg-hsr-border">
+                캐릭터 DB
+            </button>
+            <button onclick="switchTab('calculator')" id="mobile-nav-calculator" class="mobile-nav-tab flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold whitespace-nowrap text-slate-400">
+                재화 계산기
+            </button>
+            <button onclick="switchTab('relics')" id="mobile-nav-relics" class="mobile-nav-tab flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold whitespace-nowrap text-slate-400">
+                스탯 진단
+            </button>
+            <button onclick="switchTab('priority')" id="mobile-nav-priority" class="mobile-nav-tab flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold whitespace-nowrap text-slate-400">
+                육성 순서
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- TAB 1: CHARACTER DATABASE -->
+        <section id="tab-characters" class="tab-content block space-y-6">
+            <!-- Filter Bar -->
+            <div class="glass-panel p-4 rounded-2xl border border-hsr-border space-y-4">
+                <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                    <!-- Search Input -->
+                    <div class="relative w-full md:w-72">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="charSearch" oninput="filterCharacters()" placeholder="캐릭터 검색 (예: 아케론, 반디)..." class="w-full pl-10 pr-4 py-2 bg-hsr-bg border border-hsr-border rounded-xl text-sm text-slate-200 focus:outline-none focus:border-hsr-cyan transition">
+                    </div>
+
+                    <!-- Element Filters -->
+                    <div class="flex flex-wrap gap-1.5 items-center w-full md:w-auto" id="elementFilters">
+                        <button onclick="toggleFilter('element', 'ALL')" class="filter-elem-btn active-filter px-3 py-1.5 rounded-lg text-xs font-medium border border-hsr-cyan bg-hsr-cyan/10 text-hsr-cyan">전체 속성</button>
+                        <button onclick="toggleFilter('element', '번개')" class="filter-elem-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-hsr-border text-slate-400 hover:text-white">번개</button>
+                        <button onclick="toggleFilter('element', '화염')" class="filter-elem-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-hsr-border text-slate-400 hover:text-white">화염</button>
+                        <button onclick="toggleFilter('element', '화합')" style="display:none"></button> <!-- Helper -->
+                        <button onclick="toggleFilter('element', '바람')" class="filter-elem-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-hsr-border text-slate-400 hover:text-white">바람</button>
+                        <button onclick="toggleFilter('element', '물리')" class="filter-elem-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-hsr-border text-slate-400 hover:text-white">물리</button>
+                        <button onclick="toggleFilter('element', '허수')" class="filter-elem-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-hsr-border text-slate-400 hover:text-white">허수</button>
+                        <button onclick="toggleFilter('element', '양자')" class="filter-elem-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-hsr-border text-slate-400 hover:text-white">양자</button>
+                        <button onclick="toggleFilter('element', '얼음')" class="filter-elem-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-hsr-border text-slate-400 hover:text-white">얼음</button>
+                    </div>
+                </div>
+
+                <!-- Path/Fate Filters -->
+                <div class="flex flex-wrap gap-1.5 items-center pt-2 border-t border-hsr-border/50" id="pathFilters">
+                    <span class="text-xs text-slate-400 mr-2 font-semibold"><i class="fa-solid fa-compass mr-1"></i> 운명의 길:</span>
+                    <button onclick="toggleFilter('path', 'ALL')" class="filter-path-btn active-path-filter px-2.5 py-1 rounded-md text-xs font-medium bg-hsr-cyan/20 text-hsr-cyan border border-hsr-cyan/40">전체</button>
+                    <button onclick="toggleFilter('path', '공허')" class="filter-path-btn px-2.5 py-1 rounded-md text-xs font-medium bg-hsr-bg text-slate-400 border border-hsr-border hover:text-white">공허</button>
+                    <button onclick="toggleFilter('path', '파멸')" class="filter-path-btn px-2.5 py-1 rounded-md text-xs font-medium bg-hsr-bg text-slate-400 border border-hsr-border hover:text-white">파멸</button>
+                    <button onclick="toggleFilter('path', '화합')" class="filter-path-btn px-2.5 py-1 rounded-md text-xs font-medium bg-hsr-bg text-slate-400 border border-hsr-border hover:text-white">화합</button>
+                    <button onclick="toggleFilter('path', '보존')" class="filter-path-btn px-2.5 py-1 rounded-md text-xs font-medium bg-hsr-bg text-slate-400 border border-hsr-border hover:text-white">보존</button>
+                    <button onclick="toggleFilter('path', '수렵')" class="filter-path-btn px-2.5 py-1 rounded-md text-xs font-medium bg-hsr-bg text-slate-400 border border-hsr-border hover:text-white">수렵</button>
+                    <button onclick="toggleFilter('path', '풍요')" class="filter-path-btn px-2.5 py-1 rounded-md text-xs font-medium bg-hsr-bg text-slate-400 border border-hsr-border hover:text-white">풍요</button>
+                    <button onclick="toggleFilter('path', '지식')" class="filter-path-btn px-2.5 py-1 rounded-md text-xs font-medium bg-hsr-bg text-slate-400 border border-hsr-border hover:text-white">지식</button>
+                </div>
+            </div>
+
+            <!-- Character Grid -->
+            <div id="characterGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- TAB 2: RESOURCE & STAMINA CALCULATOR -->
+        <section id="tab-calculator" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Calculator Settings -->
+                <div class="lg:col-span-5 glass-panel p-6 rounded-2xl border border-hsr-border space-y-5">
+                    <div class="flex items-center justify-between border-b border-hsr-border pb-4">
+                        <h2 class="text-lg font-bold text-white flex items-center">
+                            <i class="fa-solid fa-sliders text-hsr-cyan mr-2"></i> 육성 목표 설정
+                        </h2>
+                        <select id="calcCharSelect" onchange="loadCharPresetToCalc()" class="bg-hsr-bg border border-hsr-border text-xs text-hsr-gold font-semibold px-3 py-1.5 rounded-lg focus:outline-none focus:border-hsr-gold">
+                            <option value="">캐릭터 템플릿 선택</option>
+                        </select>
+                    </div>
+
+                    <!-- Level Range -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs font-semibold">
+                            <span class="text-slate-300">캐릭터 레벨</span>
+                            <span class="text-hsr-cyan" id="lblLevelRange">Lv. 1 ➔ Lv. 80</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-[11px] text-slate-400">현재 레벨</label>
+                                <input type="number" id="startLevel" min="1" max="80" value="1" onchange="calculateResources()" class="w-full bg-hsr-bg border border-hsr-border px-3 py-2 rounded-xl text-sm focus:outline-none focus:border-hsr-cyan">
+                            </div>
+                            <div>
+                                <label class="text-[11px] text-slate-400">목표 레벨</label>
+                                <input type="number" id="targetLevel" min="1" max="80" value="80" onchange="calculateResources()" class="w-full bg-hsr-bg border border-hsr-border px-3 py-2 rounded-xl text-sm focus:outline-none focus:border-hsr-cyan">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Light Cone Range -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs font-semibold">
+                            <span class="text-slate-300">광추 레벨</span>
+                            <span class="text-hsr-gold" id="lblLcRange">Lv. 1 ➔ Lv. 80</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-[11px] text-slate-400">현재 광추 레벨</label>
+                                <input type="number" id="startLc" min="1" max="80" value="1" onchange="calculateResources()" class="w-full bg-hsr-bg border border-hsr-border px-3 py-2 rounded-xl text-sm focus:outline-none focus:border-hsr-gold">
+                            </div>
+                            <div>
+                                <label class="text-[11px] text-slate-400">목표 광추 레벨</label>
+                                <input type="number" id="targetLc" min="1" max="80" value="80" onchange="calculateResources()" class="w-full bg-hsr-bg border border-hsr-border px-3 py-2 rounded-xl text-sm focus:outline-none focus:border-hsr-gold">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trace Skill Levels -->
+                    <div class="space-y-3 pt-2 border-t border-hsr-border/60">
+                        <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">행적(스킬) 레벨 설정</h3>
+                        
+                        <!-- Basic ATK -->
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-slate-300">일반 공격 (1~6)</span>
+                            <div class="flex items-center space-x-2">
+                                <input type="number" id="startBasic" min="1" max="6" value="1" onchange="calculateResources()" class="w-14 bg-hsr-bg border border-hsr-border p-1 rounded text-center">
+                                <span class="text-slate-500">➔</span>
+                                <input type="number" id="targetBasic" min="1" max="6" value="6" onchange="calculateResources()" class="w-14 bg-hsr-bg border border-hsr-border p-1 rounded text-center">
+                            </div>
+                        </div>
+
+                        <!-- Skill, Ultimate, Talent -->
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-slate-300">전투스킬/필살기/특성 (1~10)</span>
+                            <div class="flex items-center space-x-2">
+                                <input type="number" id="startSkills" min="1" max="10" value="1" onchange="calculateResources()" class="w-14 bg-hsr-bg border border-hsr-border p-1 rounded text-center">
+                                <span class="text-slate-500">➔</span>
+                                <input type="number" id="targetSkills" min="1" max="10" value="10" onchange="calculateResources()" class="w-14 bg-hsr-bg border border-hsr-border p-1 rounded text-center">
+                            </div>
+                        </div>
+
+                        <!-- Major Traces -->
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-slate-300">핵심 추가 능력 (3개)</span>
+                            <div class="flex items-center space-x-2">
+                                <input type="number" id="majorTraces" min="0" max="3" value="3" onchange="calculateResources()" class="w-16 bg-hsr-bg border border-hsr-border p-1 rounded text-center">
+                                <span class="text-slate-400">개 해금</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calculator Output / Result -->
+                <div class="lg:col-span-7 space-y-6">
+                    <!-- Stamina Total Card -->
+                    <div class="glass-panel p-6 rounded-2xl border border-hsr-cyan/30 relative overflow-hidden bg-gradient-to-br from-hsr-card via-hsr-card to-cyan-950/20">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-widest text-hsr-cyan">총 소요 개척력 추정</span>
+                                <div class="flex items-baseline space-x-2 mt-1">
+                                    <span id="resTotalStamina" class="text-4xl font-extrabold text-white glow-cyan">1,840</span>
+                                    <span class="text-sm font-medium text-slate-400">개척력 (PT)</span>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1">
+                                    약 <span id="resTotalDays" class="text-hsr-gold font-bold">7.6</span> 일 자연 회복 소요 (하루 240pt 기준)
+                                </p>
+                            </div>
+                            <div class="px-4 py-3 rounded-xl bg-hsr-bg/80 border border-hsr-border text-center">
+                                <span class="text-xs text-slate-400 block">연결성 연료 (60pt)</span>
+                                <span id="resFuelCount" class="text-xl font-bold text-hsr-gold">31 개</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Material Details List -->
+                    <div class="glass-panel p-6 rounded-2xl border border-hsr-border space-y-4">
+                        <h3 class="text-sm font-bold text-slate-200 border-b border-hsr-border pb-3 flex items-center">
+                            <i class="fa-solid fa-boxes-stacked text-hsr-gold mr-2"></i> 상세 필요 육성 재화
+                        </h3>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="resourceDetailsGrid">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: RELIC SCORER & TARGET OPTIMIZER -->
+        <section id="tab-relics" class="tab-content hidden space-y-6">
+            <div class="glass-panel p-6 rounded-2xl border border-hsr-border space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-hsr-border pb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-white flex items-center">
+                            <i class="fa-solid fa-sliders text-hsr-cyan mr-2"></i> 캐릭터 스탯 진단기 & 종결 컷 계산기
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">현재 캐릭터 스탯을 입력하여 주요 임계점(속도, 격특, 효명 등) 달성 여부를 확인하세요.</p>
+                    </div>
+
+                    <div class="flex items-center space-x-3 w-full md:w-auto">
+                        <label class="text-xs text-slate-300 font-medium">대상 캐릭터:</label>
+                        <select id="relicTargetSelect" onchange="loadRelicTargetPreset()" class="bg-hsr-bg border border-hsr-cyan text-sm text-hsr-cyan font-bold px-3 py-2 rounded-xl focus:outline-none">
+                            <!-- Options populated via JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Inputs Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div class="bg-hsr-bg p-3 rounded-xl border border-hsr-border">
+                        <label class="text-[11px] font-semibold text-slate-400 block mb-1">속도 (SPD)</label>
+                        <input type="number" id="inputSpd" value="134" oninput="diagnoseStats()" class="w-full bg-transparent font-bold text-lg text-white focus:outline-none">
+                    </div>
+                    <div class="bg-hsr-bg p-3 rounded-xl border border-hsr-border">
+                        <label class="text-[11px] font-semibold text-slate-400 block mb-1">치명타 확률 (%)</label>
+                        <input type="number" id="inputCr" value="70" oninput="diagnoseStats()" class="w-full bg-transparent font-bold text-lg text-white focus:outline-none">
+                    </div>
+                    <div class="bg-hsr-bg p-3 rounded-xl border border-hsr-border">
+                        <label class="text-[11px] font-semibold text-slate-400 block mb-1">치명타 피해 (%)</label>
+                        <input type="number" id="inputCd" value="140" oninput="diagnoseStats()" class="w-full bg-transparent font-bold text-lg text-white focus:outline-none">
+                    </div>
+                    <div class="bg-hsr-bg p-3 rounded-xl border border-hsr-border">
+                        <label class="text-[11px] font-semibold text-slate-400 block mb-1">격파 특수효과 (%)</label>
+                        <input type="number" id="inputBe" value="100" oninput="diagnoseStats()" class="w-full bg-transparent font-bold text-lg text-white focus:outline-none">
+                    </div>
+                    <div class="bg-hsr-bg p-3 rounded-xl border border-hsr-border">
+                        <label class="text-[11px] font-semibold text-slate-400 block mb-1">효과 명중 (%)</label>
+                        <input type="number" id="inputEhr" value="20" oninput="diagnoseStats()" class="w-full bg-transparent font-bold text-lg text-white focus:outline-none">
+                    </div>
+                    <div class="bg-hsr-bg p-3 rounded-xl border border-hsr-border">
+                        <label class="text-[11px] font-semibold text-slate-400 block mb-1">공격력 (ATK)</label>
+                        <input type="number" id="inputAtk" value="3200" oninput="diagnoseStats()" class="w-full bg-transparent font-bold text-lg text-white focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- Diagnosis Results Display -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
+                    <!-- Stat Scores & Progress -->
+                    <div class="lg:col-span-2 space-y-4" id="statProgressBars">
+                        <!-- Progress bars injected via JS -->
+                    </div>
+
+                    <!-- Target Recommendation Card -->
+                    <div class="bg-hsr-bg/80 p-5 rounded-2xl border border-hsr-border space-y-3">
+                        <h3 class="text-sm font-bold text-hsr-gold flex items-center">
+                            <i class="fa-solid fa-bullseye mr-2"></i> 종결 컷 가이드라인
+                        </h3>
+                        <div id="targetGuidelineText" class="text-xs text-slate-300 leading-relaxed space-y-2">
+                            <!-- Text injected via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: RESOURCE WASTE PREVENTION ROADMAP -->
+        <section id="tab-priority" class="tab-content hidden space-y-6">
+            <div class="glass-panel p-6 rounded-2xl border border-hsr-border space-y-6">
+                <div>
+                    <h2 class="text-lg font-bold text-white flex items-center">
+                        <i class="fa-solid fa-diagram-project text-hsr-cyan mr-2"></i> 개척력 낭비 방지: 육성 순서 로드맵
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">유물에 개척력을 무작정 낭비하기 전에, 확정 스펙업 요소를 먼저 챙기는 최적화 가이드입니다.</p>
+                </div>
+
+                <!-- Interactive Flowchart Steps -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
+                    <!-- Step 1 -->
+                    <div class="glass-panel p-5 rounded-2xl border border-hsr-border relative overflow-hidden group hover:border-hsr-cyan/50 transition">
+                        <span class="absolute -right-2 -top-2 text-5xl font-black text-slate-800 pointer-events-none group-hover:text-hsr-cyan/10 transition">01</span>
+                        <div class="text-xs font-bold text-hsr-cyan uppercase mb-1">STEP 1</div>
+                        <h3 class="font-bold text-white text-sm mb-2">캐릭터 & 광추 레벨 80</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            기초 공격력/방어력/체력과 격파 피해량 계산식의 기반입니다. 최우선으로 80레벨을 달성하세요.
+                        </p>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="glass-panel p-5 rounded-2xl border border-hsr-border relative overflow-hidden group hover:border-hsr-cyan/50 transition">
+                        <span class="absolute -right-2 -top-2 text-5xl font-black text-slate-800 pointer-events-none group-hover:text-hsr-cyan/10 transition">02</span>
+                        <div class="text-xs font-bold text-hsr-gold uppercase mb-1">STEP 2</div>
+                        <h3 class="font-bold text-white text-sm mb-2">핵심 행적 Lv.8 + 추가능력</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            100% 확률로 강해지는 수치입니다. 주력 스킬 Lv.8 및 주요 추가 능력 노드를 모두 해금하세요.
+                        </p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="glass-panel p-5 rounded-2xl border border-hsr-border relative overflow-hidden group hover:border-hsr-cyan/50 transition">
+                        <span class="absolute -right-2 -top-2 text-5xl font-black text-slate-800 pointer-events-none group-hover:text-hsr-cyan/10 transition">03</span>
+                        <div class="text-xs font-bold text-purple-400 uppercase mb-1">STEP 3</div>
+                        <h3 class="font-bold text-white text-sm mb-2">유물 주옵션 파밍</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            세트 효과에 연연하지 마시고, 몸통/발/구체/매듭의 <strong class="text-slate-200">주옵션</strong>부터 올바르게 맞추세요.
+                        </p>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="glass-panel p-5 rounded-2xl border border-hsr-border relative overflow-hidden group hover:border-hsr-cyan/50 transition">
+                        <span class="absolute -right-2 -top-2 text-5xl font-black text-slate-800 pointer-events-none group-hover:text-hsr-cyan/10 transition">04</span>
+                        <div class="text-xs font-bold text-emerald-400 uppercase mb-1">STEP 4</div>
+                        <h3 class="font-bold text-white text-sm mb-2">종결 세트 및 유효 유물 파밍</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            목표 속도 변수(134/143/160) 및 치명타/격특 유효 부옵션을 다듬는 최종 엔드콘텐츠 단계입니다.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Tips List -->
+                <div class="bg-hsr-bg p-5 rounded-2xl border border-hsr-border space-y-3">
+                    <h3 class="text-sm font-bold text-hsr-gold flex items-center">
+                        <i class="fa-solid fa-lightbulb mr-2"></i> 개척자 전용 꿀팁
+                    </h3>
+                    <ul class="text-xs text-slate-300 space-y-2 list-disc list-inside leading-relaxed">
+                        <li><strong>유물합성(자체 제작 수지) 사용처:</strong> 보조 옵션 작이 어려운 <span class="text-hsr-cyan">속도 신발</span> 또는 <span class="text-hsr-cyan">에너지 회복 효율 연결 매듭</span>에 우선 사용하는 것이 효율적입니다.</li>
+                        <li><strong>속도 변수(Breakpoint):</strong> 대부분의 딜러/서포터는 최소 <span class="text-hsr-gold">속도 134</span> (첫 라운드 2회 행동)를 맞추는 것이 기본 기준입니다.</li>
+                        <li><strong>혼돈의 기억 36성 기준:</strong> 무리하게 서브 부옵을 종결짓지 않고 주옵션만 맞춰도 서포터 조합이 튼튼하면 충분히 클리어 가능합니다.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- CHARACTER DETAIL MODAL -->
+    <div id="charModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-hsr-card border border-hsr-border rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar p-6 space-y-6 shadow-2xl relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <!-- Modal Header -->
+            <div class="flex items-center space-x-4 border-b border-hsr-border pb-4">
+                <div id="modalCharAvatar" class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 p-[2px]">
+                    <div class="w-full h-full bg-hsr-bg rounded-[14px] flex items-center justify-center text-2xl font-bold text-white" id="modalCharInit">
+                        <!-- Initial -->
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h2 id="modalCharName" class="text-xl font-extrabold text-white">캐릭터 이름</h2>
+                        <span id="modalCharRarity" class="text-xs px-2 py-0.5 rounded font-bold bg-hsr-gold/20 text-hsr-gold border border-hsr-gold/30">5★</span>
+                    </div>
+                    <p id="modalCharPathElem" class="text-xs text-slate-400 mt-1">운명의 길 • 속성</p>
+                </div>
+            </div>
+
+            <!-- Details Content -->
+            <div class="space-y-5 text-xs text-slate-300">
+                <!-- Relic Build -->
+                <div class="bg-hsr-bg p-4 rounded-xl border border-hsr-border space-y-2">
+                    <h3 class="font-bold text-hsr-cyan flex items-center text-sm">
+                        <i class="fa-solid fa-shield-halved mr-2"></i> 추천 유물 & 장신구
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <span class="text-slate-500 block text-[11px]">터널 유물 (4세트)</span>
+                            <span id="modalRelics" class="font-semibold text-slate-200">선구자 4세트</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 block text-[11px]">차원 장신구 (2세트)</span>
+                            <span id="modalPlanar" class="font-semibold text-slate-200">이즈모 2세트</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Stats -->
+                <div class="bg-hsr-bg p-4 rounded-xl border border-hsr-border space-y-2">
+                    <h3 class="font-bold text-hsr-gold flex items-center text-sm">
+                        <i class="fa-solid fa-list-check mr-2"></i> 추천 부위별 주옵션
+                    </h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+                        <div class="p-2 bg-hsr-card rounded-lg border border-hsr-border">
+                            <span class="text-slate-500 block text-[10px]">몸통</span>
+                            <span id="modalBody" class="font-semibold text-slate-200">치명타 피해</span>
+                        </div>
+                        <div class="p-2 bg-hsr-card rounded-lg border border-hsr-border">
+                            <span class="text-slate-500 block text-[10px]">신발</span>
+                            <span id="modalFeet" class="font-semibold text-slate-200">속도 / 공격력</span>
+                        </div>
+                        <div class="p-2 bg-hsr-card rounded-lg border border-hsr-border">
+                            <span class="text-slate-500 block text-[10px]">차원 구체</span>
+                            <span id="modalSphere" class="font-semibold text-slate-200">속성 피해</span>
+                        </div>
+                        <div class="p-2 bg-hsr-card rounded-lg border border-hsr-border">
+                            <span class="text-slate-500 block text-[10px]">연결 매듭</span>
+                            <span id="modalRope" class="font-semibold text-slate-200">공격력 / 에너회복</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lightcones & Teams -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-hsr-bg p-4 rounded-xl border border-hsr-border space-y-1">
+                        <h3 class="font-bold text-white text-xs mb-2"><i class="fa-solid fa-wand-magic-sparkles text-hsr-gold mr-1.5"></i> 추천 광추</h3>
+                        <p id="modalLightcones" class="leading-relaxed text-slate-300">전용 광추 / 대체 4성 광추</p>
+                    </div>
+                    <div class="bg-hsr-bg p-4 rounded-xl border border-hsr-border space-y-1">
+                        <h3 class="font-bold text-white text-xs mb-2"><i class="fa-solid fa-people-group text-hsr-cyan mr-1.5"></i> 추천 조합</h3>
+                        <p id="modalTeams" class="leading-relaxed text-slate-300">추천 파티 데이터</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Database State ---
+        const characters = [
+            {
+                id: "acheron",
+                name: "아케론",
+                element: "번개",
+                path: "공허",
+                rarity: 5,
+                relics: "사수에 빠진 선구자 4세트",
+                planar: "시공을 초월한 이즈모 2세트",
+                body: "치명타 피해 / 확률",
+                feet: "공격력% / 속도",
+                sphere: "번개 속성 피해 / 공격력%",
+                rope: "공격력%",
+                lightcones: "글꽃에 안긴 꿈(전광) > 밤 인사와 잠든 얼굴",
+                teams: "아케론 + 페라 + 은랑/초구 + 어벤츄린",
+                targetSpd: 101,
+                targetCr: 70,
+                targetCd: 180,
+                targetBe: 0,
+                targetEhr: 0,
+                targetAtk: 3600
+            },
+            {
+                id: "firefly",
+                name: "반디",
+                element: "화염",
+                path: "파멸",
+                rarity: 5,
+                relics: "철위대/지옥불 4세트 (지옥을 달리는 기사)",
+                planar: "겁화의 연옥 연화 2세트",
+                body: "공격력%",
+                feet: "속도",
+                sphere: "공격력%",
+                rope: "격파 특수효과",
+                lightcones: "꿈은 어디로 돌아가야 하는가(전광) > 마음에 새긴 약속",
+                teams: "반디 + 완•매 + 화합 개척자 + 갤러거",
+                targetSpd: 150,
+                targetCr: 0,
+                targetCd: 0,
+                targetBe: 250,
+                targetEhr: 0,
+                targetAtk: 2600
+            },
+            {
+                id: "feixiao",
+                name: "비소",
+                element: "바람",
+                path: "수렵",
+                rarity: 5,
+                relics: "바람을 가르는 용사 4세트",
+                planar: "듀란 2세트 / 솔스토 2세트",
+                body: "치명타 확률 / 피해",
+                feet: "속도",
+                sphere: "바람 속성 피해",
+                rope: "공격력%",
+                lightcones: "야수 사냥(전광) > 논검",
+                teams: "비소 + 로빈 + 토파즈 + 어벤츄린",
+                targetSpd: 134,
+                targetCr: 80,
+                targetCd: 140,
+                targetBe: 0,
+                targetEhr: 0,
+                targetAtk: 3000
+            },
+            {
+                id: "robin",
+                name: "로빈",
+                element: "물리",
+                path: "화합",
+                rarity: 5,
+                relics: "죄수 2 + 거너 2 (공격력 2+2)",
+                planar: "불멸의 선주 / 루샤카",
+                body: "공격력%",
+                feet: "공격력% / 속도",
+                sphere: "공격력%",
+                rope: "에너지 회복 효율",
+                lightcones: "날개짓하는 밤(전광) > 지난날의 풍경",
+                teams: "로빈 + 추공 딜러(비소/토파즈/레이저)",
+                targetSpd: 120,
+                targetCr: 0,
+                targetCd: 0,
+                targetBe: 0,
+                targetEhr: 0,
+                targetAtk: 4000
+            },
+            {
+                id: "aventurine",
+                name: "어벤츄린",
+                element: "허수",
+                path: "보존",
+                rarity: 5,
+                relics: "팔라딘 4세트 / 팔라딘2 + 대공2",
+                planar: "팔코니아 / 벨로보그",
+                body: "방어력% / 치명타 피해",
+                feet: "속도 / 방어력%",
+                sphere: "방어력%",
+                rope: "방어력% / 에너지 회복",
+                lightcones: "트레이너의 운명(전광) > 두번째 삶의 여정",
+                teams: "어벤츄린 + 추격 공격 파티",
+                targetSpd: 134,
+                targetCr: 30,
+                targetCd: 110,
+                targetBe: 0,
+                targetEhr: 0,
+                targetAtk: 0
+            },
+            {
+                id: "ruanmei",
+                name: "완•매",
+                element: "얼음",
+                path: "화합",
+                rarity: 5,
+                relics: "시계공 4세트 / 괴도 4세트",
+                planar: "바와크 / 바탈리아",
+                body: "체력% / 방어력%",
+                feet: "속도",
+                sphere: "체력% / 방어력%",
+                rope: "에너지 회복 효율",
+                lightcones: "거울 속의 나(전광) > 톱니 바퀴",
+                teams: "범용 모든 범용 범주 파티 (격특/범용)",
+                targetSpd: 143,
+                targetCr: 0,
+                targetCd: 0,
+                targetBe: 160,
+                targetEhr: 0,
+                targetAtk: 0
+            }
+        ];
+
+        let activeElementFilter = 'ALL';
+        let activePathFilter = 'ALL';
+
+        // --- Filter Functions ---
+        function toggleFilter(type, val) {
+            if (type === 'element') {
+                activeElementFilter = val;
+                document.querySelectorAll('.filter-elem-btn').forEach(btn => {
+                    btn.classList.remove('active-filter', 'border-hsr-cyan', 'bg-hsr-cyan/10', 'text-hsr-cyan');
+                    btn.classList.add('border-hsr-border', 'text-slate-400');
+                });
+                event.target.classList.add('active-filter', 'border-hsr-cyan', 'bg-hsr-cyan/10', 'text-hsr-cyan');
+            } else if (type === 'path') {
+                activePathFilter = val;
+                document.querySelectorAll('.filter-path-btn').forEach(btn => {
+                    btn.classList.remove('active-path-filter', 'bg-hsr-cyan/20', 'text-hsr-cyan', 'border-hsr-cyan/40');
+                    btn.classList.add('bg-hsr-bg', 'text-slate-400', 'border-hsr-border');
+                });
+                event.target.classList.add('active-path-filter', 'bg-hsr-cyan/20', 'text-hsr-cyan', 'border-hsr-cyan/40');
+            }
+            filterCharacters();
+        }
+
+        function filterCharacters() {
+            const query = document.getElementById('charSearch').value.toLowerCase();
+            const grid = document.getElementById('characterGrid');
+            grid.innerHTML = '';
+
+            const filtered = characters.filter(c => {
+                const matchName = c.name.toLowerCase().includes(query);
+                const matchElem = activeElementFilter === 'ALL' || c.element === activeElementFilter;
+                const matchPath = activePathFilter === 'ALL' || c.path === activePathFilter;
+                return matchName && matchElem && matchPath;
+            });
+
+            filtered.forEach(c => {
+                const card = document.createElement('div');
+                card.className = "glass-panel glass-panel-hover p-5 rounded-2xl border border-hsr-border cursor-pointer flex flex-col justify-between";
+                card.onclick = () => openModal(c.id);
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <span class="text-[10px] uppercase font-bold text-hsr-cyan tracking-wider">${c.element} • ${c.path}</span>
+                                <h3 class="font-extrabold text-white text-lg">${c.name}</h3>
+                            </div>
+                            <span class="text-xs font-bold text-hsr-gold bg-hsr-gold/10 border border-hsr-gold/30 px-2 py-0.5 rounded">
+                                ${'★'.repeat(c.rarity)}
+                            </span>
+                        </div>
+                        <div class="text-xs text-slate-400 space-y-1 mb-4">
+                            <p class="truncate"><strong class="text-slate-300">유물:</strong> ${c.relics}</p>
+                            <p class="truncate"><strong class="text-slate-300">장신구:</strong> ${c.planar}</p>
+                        </div>
+                    </div>
+                    <button class="w-full py-2 bg-hsr-bg hover:bg-hsr-border text-hsr-cyan rounded-xl text-xs font-semibold transition border border-hsr-border flex items-center justify-center">
+                        세팅 상세보기 <i class="fa-solid fa-arrow-right ml-1.5 text-[10px]"></i>
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- Modal Logic ---
+        function openModal(id) {
+            const c = characters.find(item => item.id === id);
+            if(!c) return;
+
+            document.getElementById('modalCharInit').textContent = c.name.charAt(0);
+            document.getElementById('modalCharName').textContent = c.name;
+            document.getElementById('modalCharRarity').textContent = '★'.repeat(c.rarity);
+            document.getElementById('modalCharPathElem').textContent = `${c.element} 속성 • 운명의 길 [${c.path}]`;
+
+            document.getElementById('modalRelics').textContent = c.relics;
+            document.getElementById('modalPlanar').textContent = c.planar;
+
+            document.getElementById('modalBody').textContent = c.body;
+            document.getElementById('modalFeet').textContent = c.feet;
+            document.getElementById('modalSphere').textContent = c.sphere;
+            document.getElementById('modalRope').textContent = c.rope;
+
+            document.getElementById('modalLightcones').textContent = c.lightcones;
+            document.getElementById('modalTeams').textContent = c.teams;
+
+            const modal = document.getElementById('charModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('charModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        // --- Tab Switching Logic ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('text-hsr-cyan', 'bg-hsr-border');
+                btn.classList.add('text-slate-400');
+            });
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if(activeNav) {
+                activeNav.classList.add('text-hsr-cyan', 'bg-hsr-border');
+                activeNav.classList.remove('text-slate-400');
+            }
+        }
+
+        // --- Resource Calculator Engine ---
+        function calculateResources() {
+            const startLvl = parseInt(document.getElementById('startLevel').value) || 1;
+            const targetLvl = parseInt(document.getElementById('targetLevel').value) || 80;
+
+            const startLc = parseInt(document.getElementById('startLc').value) || 1;
+            const targetLc = parseInt(document.getElementById('targetLc').value) || 80;
+
+            const startB = parseInt(document.getElementById('startBasic').value) || 1;
+            const targetB = parseInt(document.getElementById('targetBasic').value) || 6;
+
+            const startS = parseInt(document.getElementById('startSkills').value) || 1;
+            const targetS = parseInt(document.getElementById('targetSkills').value) || 10;
+
+            // Simple estimation formulas based on levels
+            const charLvlDiff = Math.max(0, targetLvl - startLvl);
+            const lcLvlDiff = Math.max(0, targetLc - startLc);
+            const basicDiff = Math.max(0, targetB - startB);
+            const skillDiff = Math.max(0, targetS - startS) * 3; // 3 core skills
+
+            // Exp & Credit estimations
+            const expBooks = Math.round(charLvlDiff * 3.6); // Traveler's Guide
+            const credits = Math.round((charLvlDiff * 10500) + (lcLvlDiff * 8000) + (skillDiff * 95000));
+            const tracePurple = Math.round(skillDiff * 4.2 + basicDiff * 2);
+            const bossMats = Math.round(charLvlDiff * 0.82);
+
+            // Total Trailblaze Power calculation
+            const totalStamina = Math.round((expBooks * 7) + (bossMats * 30) + (tracePurple * 15) + (credits / 1200));
+            const daysRequired = (totalStamina / 240).toFixed(1);
+            const fuelCount = Math.ceil(totalStamina / 60);
+
+            // Update UI
+            document.getElementById('resTotalStamina').textContent = totalStamina.toLocaleString();
+            document.getElementById('resTotalDays').textContent = daysRequired;
+            document.getElementById('resFuelCount').textContent = `${fuelCount} 개`;
+
+            const detailsGrid = document.getElementById('resourceDetailsGrid');
+            detailsGrid.innerHTML = `
+                <div class="flex items-center space-x-3 p-3 bg-hsr-bg rounded-xl border border-hsr-border">
+                    <div class="w-10 h-10 rounded-lg bg-purple-900/40 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                        <i class="fa-solid fa-book text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 block">여행자의 가이드 (경험치)</span>
+                        <strong class="text-sm font-bold text-white">${expBooks} 개</strong>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-3 p-3 bg-hsr-bg rounded-xl border border-hsr-border">
+                    <div class="w-10 h-10 rounded-lg bg-amber-900/40 border border-amber-500/30 flex items-center justify-center text-hsr-gold">
+                        <i class="fa-solid fa-coins text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 block">신용 포인트 (Credits)</span>
+                        <strong class="text-sm font-bold text-white">${(credits/10000).toFixed(1)} 만</strong>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-3 p-3 bg-hsr-bg rounded-xl border border-hsr-border">
+                    <div class="w-10 h-10 rounded-lg bg-cyan-900/40 border border-cyan-500/30 flex items-center justify-center text-hsr-cyan">
+                        <i class="fa-solid fa-flask text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 block">최고급 행적 재료 (보라)</span>
+                        <strong class="text-sm font-bold text-white">${tracePurple} 개</strong>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-3 p-3 bg-hsr-bg rounded-xl border border-hsr-border">
+                    <div class="w-10 h-10 rounded-lg bg-rose-900/40 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                        <i class="fa-solid fa-skull text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 block">정체된 허영 보스 재료</span>
+                        <strong class="text-sm font-bold text-white">${bossMats} 개</strong>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- Relic Diagnostics Engine ---
+        function loadRelicTargetPreset() {
+            const sel = document.getElementById('relicTargetSelect').value;
+            const c = characters.find(item => item.id === sel);
+            if(!c) return;
+
+            if(c.targetSpd) document.getElementById('inputSpd').value = c.targetSpd;
+            if(c.targetCr) document.getElementById('inputCr').value = c.targetCr;
+            if(c.targetCd) document.getElementById('inputCd').value = c.targetCd;
+            if(c.targetBe) document.getElementById('inputBe').value = c.targetBe;
+            if(c.targetEhr) document.getElementById('inputEhr').value = c.targetEhr;
+            if(c.targetAtk) document.getElementById('inputAtk').value = c.targetAtk;
+
+            diagnoseStats();
+        }
+
+        function diagnoseStats() {
+            const spd = parseFloat(document.getElementById('inputSpd').value) || 0;
+            const cr = parseFloat(document.getElementById('inputCr').value) || 0;
+            const cd = parseFloat(document.getElementById('inputCd').value) || 0;
+            const be = parseFloat(document.getElementById('inputBe').value) || 0;
+
+            const sel = document.getElementById('relicTargetSelect').value;
+            const c = characters.find(item => item.id === sel) || characters[0];
+
+            const spdScore = Math.min(100, Math.round((spd / (c.targetSpd || 134)) * 100));
+            const crScore = c.targetCr > 0 ? Math.min(100, Math.round((cr / c.targetCr) * 100)) : 100;
+            const cdScore = c.targetCd > 0 ? Math.min(100, Math.round((cd / c.targetCd) * 100)) : 100;
+
+            const progressContainer = document.getElementById('statProgressBars');
+            progressContainer.innerHTML = `
+                <!-- Speed Bar -->
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-semibold">
+                        <span class="text-slate-300">속도 달성률 (목표: ${c.targetSpd || 134})</span>
+                        <span class="${spdScore >= 100 ? 'text-hsr-cyan font-bold' : 'text-slate-400'}">${spd} / ${c.targetSpd || 134} (${spdScore}%)</span>
+                    </div>
+                    <div class="w-full bg-hsr-bg rounded-full h-2.5 overflow-hidden border border-hsr-border">
+                        <div class="bg-hsr-cyan h-2.5 rounded-full transition-all duration-300" style="width: ${spdScore}%"></div>
+                    </div>
+                </div>
+
+                <!-- CRIT Rate Bar -->
+                ${c.targetCr > 0 ? `
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-semibold">
+                        <span class="text-slate-300">치명타 확률 달성률 (목표: ${c.targetCr}%)</span>
+                        <span class="${crScore >= 100 ? 'text-hsr-gold font-bold' : 'text-slate-400'}">${cr}% / ${c.targetCr}% (${crScore}%)</span>
+                    </div>
+                    <div class="w-full bg-hsr-bg rounded-full h-2.5 overflow-hidden border border-hsr-border">
+                        <div class="bg-hsr-gold h-2.5 rounded-full transition-all duration-300" style="width: ${crScore}%"></div>
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- CRIT DMG Bar -->
+                ${c.targetCd > 0 ? `
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-semibold">
+                        <span class="text-slate-300">치명타 피해 달성률 (목표: ${c.targetCd}%)</span>
+                        <span class="${cdScore >= 100 ? 'text-purple-400 font-bold' : 'text-slate-400'}">${cd}% / ${c.targetCd}% (${cdScore}%)</span>
+                    </div>
+                    <div class="w-full bg-hsr-bg rounded-full h-2.5 overflow-hidden border border-hsr-border">
+                        <div class="bg-purple-500 h-2.5 rounded-full transition-all duration-300" style="width: ${cdScore}%"></div>
+                    </div>
+                </div>
+                ` : ''}
+            `;
+
+            // Guideline Text
+            document.getElementById('targetGuidelineText').innerHTML = `
+                <p><strong>${c.name}</strong> 딜 세팅 권장 목표 수치입니다.</p>
+                <ul class="list-disc list-inside space-y-1 mt-2 text-slate-400">
+                    <li>주요 속도 변수: <span class="text-hsr-cyan">134 (1라운드 2행동)</span> / <span class="text-hsr-cyan">160 (고속 세팅)</span></li>
+                    <li>목표 치확/치피 비율은 <span class="text-hsr-gold">1 : 2</span>를 권장합니다.</li>
+                </ul>
+            `;
+        }
+
+        function populateSelects() {
+            const calcSel = document.getElementById('calcCharSelect');
+            const relicSel = document.getElementById('relicTargetSelect');
+
+            characters.forEach(c => {
+                const opt1 = document.createElement('option');
+                opt1.value = c.id;
+                opt1.textContent = `${c.name} (${c.element})`;
+                calcSel.appendChild(opt1);
+
+                const opt2 = document.createElement('option');
+                opt2.value = c.id;
+                opt2.textContent = `${c.name}`;
+                relicSel.appendChild(opt2);
+            });
+        }
+
+        function loadCharPresetToCalc() {
+            calculateResources();
+        }
+
+        // --- Init ---
+        window.onload = function() {
+            populateSelects();
+            filterCharacters();
+            calculateResources();
+            diagnoseStats();
+        };
+    </script>
+</body>
+</html>
